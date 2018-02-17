@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "peerconnect_client", "peerconnect_client\peerconnect_client.vcxproj", "{19700D6F-3090-41B8-B0A9-EC0979910CCC}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -106,6 +106,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{66E88ED9-B157-43C1-9E7C-46B5585C9D8B}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "stunserver", "stunserver\stunserver.vcxproj", "{6C12DFF3-80B0-43F3-814A-ED4DA5443EBE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4382C989-4AA4-42BC-89D4-E34D84799DB3} = {4382C989-4AA4-42BC-89D4-E34D84799DB3}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "relayserver", "relayserver\relayserver.vcxproj", "{33340202-960B-4CCE-8BF8-169A9115302E}"
 EndProject
