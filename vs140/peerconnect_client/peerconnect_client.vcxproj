@@ -19,16 +19,27 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\third_party\socket.io-client-cpp\src\internal\sio_client_impl.cpp" />
+    <ClCompile Include="..\..\third_party\socket.io-client-cpp\src\internal\sio_packet.cpp" />
+    <ClCompile Include="..\..\third_party\socket.io-client-cpp\src\sio_client.cpp" />
+    <ClCompile Include="..\..\third_party\socket.io-client-cpp\src\sio_socket.cpp" />
     <ClCompile Include="..\..\webrtc\examples\peerconnection\client\conductor.cc" />
     <ClCompile Include="..\..\webrtc\examples\peerconnection\client\defaults.cc" />
+    <ClCompile Include="..\..\webrtc\examples\peerconnection\client\https_client.cpp" />
     <ClCompile Include="..\..\webrtc\examples\peerconnection\client\main.cc" />
     <ClCompile Include="..\..\webrtc\examples\peerconnection\client\main_wnd.cc" />
     <ClCompile Include="..\..\webrtc\examples\peerconnection\client\peer_connection_client.cc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\third_party\socket.io-client-cpp\src\internal\sio_client_impl.h" />
+    <ClInclude Include="..\..\third_party\socket.io-client-cpp\src\internal\sio_packet.h" />
+    <ClInclude Include="..\..\third_party\socket.io-client-cpp\src\sio_client.h" />
+    <ClInclude Include="..\..\third_party\socket.io-client-cpp\src\sio_message.h" />
+    <ClInclude Include="..\..\third_party\socket.io-client-cpp\src\sio_socket.h" />
     <ClInclude Include="..\..\webrtc\examples\peerconnection\client\conductor.h" />
     <ClInclude Include="..\..\webrtc\examples\peerconnection\client\defaults.h" />
     <ClInclude Include="..\..\webrtc\examples\peerconnection\client\flagdefs.h" />
+    <ClInclude Include="..\..\webrtc\examples\peerconnection\client\https_client.h" />
     <ClInclude Include="..\..\webrtc\examples\peerconnection\client\main_wnd.h" />
     <ClInclude Include="..\..\webrtc\examples\peerconnection\client\peer_connection_client.h" />
   </ItemGroup>
@@ -89,12 +100,16 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Local\boost_1_59_0</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;C:\Local\boost_1_59_0\lib32-msvc-14.0</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Local\boost_1_59_0</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;C:\Local\boost_1_59_0\lib32-msvc-14.0</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -105,7 +120,8 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SIO_TLS;_WEBSOCKETPP_CPP11_STL_;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..;$(webrtc_root);$(webrtc_root)\third_party\jsoncpp\include;$(webrtc_root)\third_party\socket.io-client-cpp\lib\rapidjson\include;$(webrtc_root)\third_party\socket.io-client-cpp\src;$(webrtc_root)\third_party\expat\x86-windows-cl14\include;$(webrtc_root)\third_party\libyuv\x86-windows-cl14\include;$(webrtc_root)\third_party\DirectX\DirectShow\BaseClasses;$(webrtc_root)\third_party\openssl\x86-windows-cl14\include;$(webrtc_root)\third_party\librtmp\src;%(AdditionalIncludeDirectories);$(webrtc_root)\third_party\socket.io-client-cpp\lib\websocketpp;;$(webrtc_root)\third_party\socket.io-client-cpp\lib\rapidjson\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -135,7 +151,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WEBSOCKETPP_CPP11_STL_;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..;$(webrtc_root);$(webrtc_root)\third_party\jsoncpp\include;$(webrtc_root)\third_party\expat\x86-windows-cl14\include;$(webrtc_root)\third_party\libyuv\x86-windows-cl14\include;$(webrtc_root)\third_party\DirectX\DirectShow\BaseClasses;$(webrtc_root)\third_party\openssl\x86-windows-cl14\include;$(webrtc_root)\third_party\librtmp\src;%(AdditionalIncludeDirectories);$(webrtc_root)\third_party\socket.io-client-cpp\lib\websocketpp;;$(webrtc_root)\third_party\socket.io-client-cpp\lib\rapidjson\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

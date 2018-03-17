@@ -15,11 +15,15 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <mutex>
+#include <condition_variable>
 
 #include "webrtc/base/nethelpers.h"
 #include "webrtc/base/physicalsocketserver.h"
 #include "webrtc/base/signalthread.h"
 #include "webrtc/base/sigslot.h"
+#include "sio_client.h"
+#include "https_client.h"
 
 typedef std::map<int, std::string> Peers;
 
@@ -37,7 +41,8 @@ struct PeerConnectionClientObserver {
 };
 
 class PeerConnectionClient : public sigslot::has_slots<>,
-                             public rtc::MessageHandler {
+	public rtc::MessageHandler,
+	public https_client_Observer {
  public:
   enum State {
     NOT_CONNECTED,
@@ -69,7 +74,16 @@ class PeerConnectionClient : public sigslot::has_slots<>,
   // implements the MessageHandler interface
   void OnMessage(rtc::Message* msg);
 
- protected:
+
+  virtual void OnHttpsStatus(https_client_status status, const std::string& message) override;
+
+protected:
+  void on_sio_connected();
+  void on_sio_close(sio::client::close_reason const& reason);
+  void on_sio_fail();
+  void on_sio_token_callback(sio::message::list const& ack);
+
+  void DoConnect_licode();
   void DoConnect();
   void Close();
   void InitSocketSignals();
@@ -118,6 +132,15 @@ class PeerConnectionClient : public sigslot::has_slots<>,
   Peers peers_;
   State state_;
   int my_id_;
+  sio::client sio_client_;
+  std::string room_token_;
+  std::string decodec_room_token_;
+
+  std::mutex _lock;
+
+  std::condition_variable_any _cond;
+  bool sio_connect_finish_;
+  sio::socket::ptr sio_socket_;
 };
 
 #endif  // WEBRTC_EXAMPLES_PEERCONNECTION_CLIENT_PEER_CONNECTION_CLIENT_H_

@@ -15,12 +15,31 @@
 #include "webrtc/base/logging.h"
 #include "webrtc/base/nethelpers.h"
 #include "webrtc/base/stringutils.h"
+#include "webrtc/base/base64.h"
 
 #ifdef WIN32
 #include "webrtc/base/win32socketserver.h"
 #endif
 
+#include "sio_client.h"
+#include "rapidjson/document.h"
+using namespace rapidjson;
+
+extern bool FLAG_licode;
+
 using rtc::sprintfn;
+
+#ifdef WIN32
+#define BIND_EVENT(IO,EV,FN) \
+    do{ \
+        socket::event_listener_aux l = FN;\
+        IO->on(EV,l);\
+    } while(0)
+
+#else
+#define BIND_EVENT(IO,EV,FN) \
+    IO->on(EV,FN)
+#endif
 
 namespace {
 
@@ -49,7 +68,9 @@ PeerConnectionClient::PeerConnectionClient()
   : callback_(NULL),
     resolver_(NULL),
     state_(NOT_CONNECTED),
-    my_id_(-1) {
+    my_id_(-1),
+	sio_connect_finish_(false),
+	sio_socket_(NULL){
 }
 
 PeerConnectionClient::~PeerConnectionClient() {
@@ -77,7 +98,7 @@ int PeerConnectionClient::id() const {
 }
 
 bool PeerConnectionClient::is_connected() const {
-  return my_id_ != -1;
+  return my_id_ != -1 || sio_socket_ != NULL;
 }
 
 const Peers& PeerConnectionClient::peers() const {
@@ -133,24 +154,100 @@ void PeerConnectionClient::OnResolveResult(
     state_ = NOT_CONNECTED;
   } else {
     server_address_ = resolver_->address();
+
     DoConnect();
   }
 }
 
-void PeerConnectionClient::DoConnect() {
-  control_socket_.reset(CreateClientSocket(server_address_.ipaddr().family()));
-  hanging_get_.reset(CreateClientSocket(server_address_.ipaddr().family()));
-  InitSocketSignals();
-  char buffer[1024];
-  sprintfn(buffer, sizeof(buffer),
-           "GET /sign_in?%s HTTP/1.0\r\n\r\n", client_name_.c_str());
-  onconnect_data_ = buffer;
+void PeerConnectionClient::on_sio_connected()
+{
+	_lock.lock();
+	_cond.notify_all();
+	sio_connect_finish_ = true;
+	_lock.unlock();
+}
+void PeerConnectionClient::on_sio_close(sio::client::close_reason const& reason)
+{
+	LOG(INFO) << "sio closed " << std::endl;
+}
 
-  bool ret = ConnectControlSocket();
-  if (ret)
-    state_ = SIGNING_IN;
-  if (!ret) {
-    callback_->OnServerConnectionFailure();
+void PeerConnectionClient::on_sio_fail()
+{
+	LOG(INFO) << "sio failed " << std::endl;
+}
+
+void PeerConnectionClient::on_sio_token_callback(sio::message::list const& ack)
+{
+	std::string info;
+	for (int i = 0; i < ack.size(); i++) {
+		sio::message::flag f = ack[i]->get_flag();
+		if (f == sio::message::flag_string) {
+			LOG(INFO) << "sio_token_callback:" << i << ": " << ack[i]->get_string();
+		}
+	}
+}
+
+void PeerConnectionClient::DoConnect_licode()
+{
+	boost::asio::ssl::context ctx(boost::asio::ssl::context::sslv23);
+	ctx.set_default_verify_paths();
+
+	boost::asio::io_service io_service;
+	std::string data = "{\"username\":\"user\",\"role\":\"presenter\",\"room\":\"basicExampleRoom\",\"type\":\"erizo\",\"mediaConfiguration\":\"default\"}";
+
+	https_client c(io_service, ctx, server_address_.ToString(), "/createToken", data);
+	io_service.run();
+	if (c.get_status() == hcs_read_content_finish) {
+		room_token_ = c.get_content();
+		size_t data_used;
+		rtc::Base64::DecodeFromArray(room_token_.c_str(), room_token_.length(), rtc::Base64::DO_STRICT, &decodec_room_token_, &data_used);
+		Document document;
+		document.Parse(decodec_room_token_.c_str());
+		if (document.HasMember("host")) {
+			std::string url = "wss://";
+			url += document["host"].GetString();
+			sio_client_.set_open_listener(std::bind(&PeerConnectionClient::on_sio_connected, this));
+			sio_client_.set_close_listener(std::bind(&PeerConnectionClient::on_sio_close, this, std::placeholders::_1));
+			sio_client_.set_fail_listener(std::bind(&PeerConnectionClient::on_sio_fail, this));
+
+			sio_client_.connect(url);
+			_lock.lock();
+			if (!sio_connect_finish_)
+			{
+				_cond.wait(_lock);
+			}
+			_lock.unlock();
+			sio_socket_ = sio_client_.socket();
+			sio_socket_->on("success", sio::socket::event_listener_aux([&](std::string const& name, sio::message::ptr const& data, bool isAck, sio::message::list &ack_resp) {
+				_lock.lock();
+				_cond.notify_all();
+				_lock.unlock();
+			}));
+			sio::message::ptr _message = sio::from_json(document, std::vector<std::shared_ptr<const std::string> >());
+			sio_socket_->emit("token", _message, std::bind(&PeerConnectionClient::on_sio_token_callback, this, std::placeholders::_1));
+		}
+	}
+}
+
+void PeerConnectionClient::DoConnect() {
+  if (FLAG_licode) {
+	  DoConnect_licode();
+  }
+  else {
+	  control_socket_.reset(CreateClientSocket(server_address_.ipaddr().family()));
+	  hanging_get_.reset(CreateClientSocket(server_address_.ipaddr().family()));
+	  InitSocketSignals();
+	  char buffer[1024];
+	  sprintfn(buffer, sizeof(buffer),
+		  "GET /sign_in?%s HTTP/1.0\r\n\r\n", client_name_.c_str());
+	  onconnect_data_ = buffer;
+
+	  bool ret = ConnectControlSocket();
+	  if (ret)
+		  state_ = SIGNING_IN;
+	  if (!ret) {
+		  callback_->OnServerConnectionFailure();
+	  }
   }
 }
 
@@ -511,3 +608,9 @@ void PeerConnectionClient::OnMessage(rtc::Message* msg) {
   // ignore msg; there is currently only one supported message ("retry")
   DoConnect();
 }
+
+void PeerConnectionClient::OnHttpsStatus(https_client_status status, const std::string& message)
+{
+	throw std::logic_error("The method or operation is not implemented.");
+}
+
