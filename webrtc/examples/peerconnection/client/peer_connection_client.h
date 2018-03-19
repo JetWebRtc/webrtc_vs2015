@@ -53,6 +53,15 @@ class PeerConnectionClient : public sigslot::has_slots<>,
     SIGNING_OUT,
   };
 
+  enum Licode_State {
+	  init,
+	  connecting,
+	  connected,
+	  sio_connecting,
+	  sio_connected,
+	  sio_token_success,
+  };
+
   PeerConnectionClient();
   ~PeerConnectionClient();
 
@@ -70,6 +79,7 @@ class PeerConnectionClient : public sigslot::has_slots<>,
   bool IsSendingMessage();
 
   bool SignOut();
+  void Close();
 
   // implements the MessageHandler interface
   void OnMessage(rtc::Message* msg);
@@ -82,10 +92,11 @@ protected:
   void on_sio_close(sio::client::close_reason const& reason);
   void on_sio_fail();
   void on_sio_token_callback(sio::message::list const& ack);
+  void on_sio_publish_callback(sio::message::list const& ack);
 
   void DoConnect_licode();
   void DoConnect();
-  void Close();
+
   void InitSocketSignals();
   bool ConnectControlSocket();
   void OnConnect(rtc::AsyncSocket* socket);
@@ -141,6 +152,7 @@ protected:
   std::condition_variable_any _cond;
   bool sio_connect_finish_;
   sio::socket::ptr sio_socket_;
+  Licode_State licode_state_;
 };
 
 #endif  // WEBRTC_EXAMPLES_PEERCONNECTION_CLIENT_PEER_CONNECTION_CLIENT_H_

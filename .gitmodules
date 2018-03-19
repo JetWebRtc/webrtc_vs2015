@@ -1,0 +1,4 @@
+[submodule "third_party/socket.io-client-cpp"]
+	path = third_party/socket.io-client-cpp
+	url = https://github.com/bill-hu/socket.io-client-cpp
+	branch = licode

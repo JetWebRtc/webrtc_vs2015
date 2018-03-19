@@ -176,13 +176,29 @@ void PeerConnectionClient::on_sio_fail()
 	LOG(INFO) << "sio failed " << std::endl;
 }
 
+void PeerConnectionClient::on_sio_publish_callback(sio::message::list const& ack)
+{
+	LOG(INFO) << "sio_token_callback:" << to_json(*ack.to_array_message());
+}
+
 void PeerConnectionClient::on_sio_token_callback(sio::message::list const& ack)
 {
-	std::string info;
+	LOG(INFO) << "sio_token_callback:" << to_json(*ack.to_array_message());
 	for (int i = 0; i < ack.size(); i++) {
 		sio::message::flag f = ack[i]->get_flag();
 		if (f == sio::message::flag_string) {
-			LOG(INFO) << "sio_token_callback:" << i << ": " << ack[i]->get_string();
+			std::string info = ack[i]->get_string();
+			LOG(INFO) << "sio_token_callback:" << i << ": " << info;
+			if (info == "success") {
+				licode_state_ = sio_token_success;
+				char * publish_param = "{\"state\":\"erizo\",\"audio\":true,\"video\":true,\"data\":true,\"minVideoBW\":0,\"attributes\":{\"name\":\"test\"}}";
+				Document document;
+				document.Parse(publish_param);
+				sio::message::ptr _message = sio::from_json(document, std::vector<std::shared_ptr<const std::string> >());
+				sio::message::list l(_message);
+				l.push(sio::null_message::create());
+				sio_socket_->emit("publish", l, std::bind(&PeerConnectionClient::on_sio_publish_callback, this, std::placeholders::_1));
+			}
 		}
 	}
 }
@@ -218,12 +234,20 @@ void PeerConnectionClient::DoConnect_licode()
 			}
 			_lock.unlock();
 			sio_socket_ = sio_client_.socket();
-			sio_socket_->on("success", sio::socket::event_listener_aux([&](std::string const& name, sio::message::ptr const& data, bool isAck, sio::message::list &ack_resp) {
+			sio_socket_->on("disconnect", sio::socket::event_listener_aux([&](std::string const& name, sio::message::ptr const& data, bool isAck, sio::message::list &ack_resp) {
 				_lock.lock();
 				_cond.notify_all();
 				_lock.unlock();
+				LOG(INFO) << "sio_disconnect";
+				sio_socket_->close();
 			}));
-			sio::message::ptr _message = sio::from_json(document, std::vector<std::shared_ptr<const std::string> >());
+			sio_socket_->on("signaling_message_erizo", sio::socket::event_listener_aux([&](std::string const& name, sio::message::ptr const& data, bool isAck, sio::message::list &ack_resp) {
+				_lock.lock();
+				_cond.notify_all();
+				_lock.unlock();
+				LOG(INFO) << "signaling_message_erizo:" << to_json(*data);
+			}));
+			sio::message::ptr _message = sio::from_json(document);
 			sio_socket_->emit("token", _message, std::bind(&PeerConnectionClient::on_sio_token_callback, this, std::placeholders::_1));
 		}
 	}
@@ -285,10 +309,10 @@ bool PeerConnectionClient::SignOut() {
   if (state_ == NOT_CONNECTED || state_ == SIGNING_OUT)
     return true;
 
-  if (hanging_get_->GetState() != rtc::Socket::CS_CLOSED)
+  if (hanging_get_ != nullptr && hanging_get_->GetState() != rtc::Socket::CS_CLOSED)
     hanging_get_->Close();
 
-  if (control_socket_->GetState() == rtc::Socket::CS_CLOSED) {
+  if (control_socket_ != nullptr && control_socket_->GetState() == rtc::Socket::CS_CLOSED) {
     state_ = SIGNING_OUT;
 
     if (my_id_ != -1) {
@@ -309,8 +333,16 @@ bool PeerConnectionClient::SignOut() {
 }
 
 void PeerConnectionClient::Close() {
-  control_socket_->Close();
-  hanging_get_->Close();
+  if (sio_socket_) {
+		sio_socket_->close();
+		sio_socket_ = NULL;
+  }
+  if (control_socket_) {
+	  control_socket_->Close();
+  }
+  if (hanging_get_) {
+	  hanging_get_->Close();
+  }
   onconnect_data_.clear();
   peers_.clear();
   if (resolver_ != NULL) {

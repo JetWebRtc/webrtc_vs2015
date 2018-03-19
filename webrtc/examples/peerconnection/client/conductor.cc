@@ -337,8 +337,10 @@ void Conductor::OnServerConnectionFailure() {
 //
 
 void Conductor::StartLogin(const std::string& server, int port) {
-  if (client_->is_connected())
-    return;
+	if (client_->is_connected()) {
+		client_->Close();
+		return;
+	}
   server_ = server;
   client_->Connect(server, port, GetPeerName());
 }
