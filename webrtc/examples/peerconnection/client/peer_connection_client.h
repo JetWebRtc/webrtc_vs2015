@@ -87,12 +87,16 @@ class PeerConnectionClient : public sigslot::has_slots<>,
 
   virtual void OnHttpsStatus(https_client_status status, const std::string& message) override;
 
+  void SendLicodeOffer(std::string & sdp);
+  void SendLicodeCandidate(const std::string candidate);
 protected:
   void on_sio_connected();
   void on_sio_close(sio::client::close_reason const& reason);
   void on_sio_fail();
   void on_sio_token_callback(sio::message::list const& ack);
   void on_sio_publish_callback(sio::message::list const& ack);
+  void on_sio_subscribe_callback(sio::message::list const& ack);
+  void on_sio_signaling_callback(sio::message::list const& ack);
 
   void DoConnect_licode();
   void DoConnect();
@@ -153,6 +157,14 @@ protected:
   bool sio_connect_finish_;
   sio::socket::ptr sio_socket_;
   Licode_State licode_state_;
+  int64_t licode_streamId_;
+  struct LicodeStream {
+	  int64_t id;
+	  bool video;
+	  bool audio;
+	  bool data;
+  };
+  std::map<int64_t, struct LicodeStream> licode_streams_;
 };
 
 #endif  // WEBRTC_EXAMPLES_PEERCONNECTION_CLIENT_PEER_CONNECTION_CLIENT_H_

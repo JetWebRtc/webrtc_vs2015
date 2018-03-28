@@ -176,28 +176,96 @@ void PeerConnectionClient::on_sio_fail()
 	LOG(INFO) << "sio failed " << std::endl;
 }
 
+extern HWND g_hMainWnd;
+
+void PeerConnectionClient::on_sio_signaling_callback(sio::message::list const& ack)
+{
+	LOG(INFO) << "sio_token_callback:" << to_json(*ack.to_array_message());
+}
+
 void PeerConnectionClient::on_sio_publish_callback(sio::message::list const& ack)
 {
 	LOG(INFO) << "sio_token_callback:" << to_json(*ack.to_array_message());
+	if (ack.size() == 1) {
+		if (ack.at(0)->get_flag() == sio::message::flag_integer) {
+			licode_streamId_ = ack.at(0)->get_int();
+			LOG(INFO) << "stream Id:" << licode_streamId_;
+			}
+	}
+	::PostMessage(g_hMainWnd, WM_USER, 0, 0);
+}
+
+void PeerConnectionClient::on_sio_subscribe_callback(sio::message::list const& ack)
+{
+	LOG(INFO) << "sio_subscribe_callback:" << to_json(*ack.to_array_message());
+	if (ack.size() == 1) {
+		if (ack.at(0)->get_flag() == sio::message::flag_integer) {
+			licode_streamId_ = ack.at(0)->get_int();
+			LOG(INFO) << "stream Id:" << licode_streamId_;
+		}
+	}
+	::PostMessage(g_hMainWnd, WM_USER, 0, 0);
 }
 
 void PeerConnectionClient::on_sio_token_callback(sio::message::list const& ack)
 {
 	LOG(INFO) << "sio_token_callback:" << to_json(*ack.to_array_message());
-	for (int i = 0; i < ack.size(); i++) {
-		sio::message::flag f = ack[i]->get_flag();
+	if( ack.size() > 0) {
+		sio::message::flag f = ack[0]->get_flag();
 		if (f == sio::message::flag_string) {
-			std::string info = ack[i]->get_string();
-			LOG(INFO) << "sio_token_callback:" << i << ": " << info;
+			std::string info = ack[0]->get_string();
+			LOG(INFO) << "sio_token_callback:" << 0 << ": " << info;
 			if (info == "success") {
-				licode_state_ = sio_token_success;
-				char * publish_param = "{\"state\":\"erizo\",\"audio\":true,\"video\":true,\"data\":true,\"minVideoBW\":0,\"attributes\":{\"name\":\"test\"}}";
-				Document document;
-				document.Parse(publish_param);
-				sio::message::ptr _message = sio::from_json(document, std::vector<std::shared_ptr<const std::string> >());
-				sio::message::list l(_message);
-				l.push(sio::null_message::create());
-				sio_socket_->emit("publish", l, std::bind(&PeerConnectionClient::on_sio_publish_callback, this, std::placeholders::_1));
+				static bool  bpublish = true;
+				if (ack.size() > 1 && ack[1]->get_flag() == sio::message::flag_object) {
+					std::map<std::string, sio::message::ptr> & m = ack[1]->get_map();
+					if (m.find("streams") != m.end()) {
+						sio::message::ptr  streams = m["streams"];
+						if (streams->get_flag() == sio::message::flag_array) {
+							std::vector<sio::message::ptr> & v = streams->get_vector();
+							if (v.size() > 0) {
+								for (int i = 0; i < v.size(); i++) {
+									std::map<std::string, sio::message::ptr> & stream = v[i]->get_map();
+									struct LicodeStream s;
+									s.id = stream["id"]->get_int();
+									s.audio = stream["audio"]->get_bool();
+									s.video = stream["video"]->get_bool();
+									s.data = stream["data"]->get_bool();
+									licode_streams_[s.id] = s;
+								}
+							}
+						}
+					}
+
+				}
+				if (bpublish) {
+					licode_state_ = sio_token_success;
+					char * publish_param = "{\"state\":\"erizo\",\"audio\":true,\"video\":true,\"data\":true,\"minVideoBW\":0,\"attributes\":{\"name\":\"test\"}}";
+					Document document;
+					document.Parse(publish_param);
+					sio::message::ptr _message = sio::from_json(document, std::vector<std::shared_ptr<const std::string> >());
+					sio::message::list l(_message);
+					l.push(sio::null_message::create());
+					sio_socket_->emit("publish", l, std::bind(&PeerConnectionClient::on_sio_publish_callback, this, std::placeholders::_1));
+				}
+				else {
+					if (licode_streams_.size() > 0) {
+						struct LicodeStream s = licode_streams_.begin()->second;
+						sio::message::list l;
+						sio::message::ptr m1 = sio::object_message::create();
+						licode_streamId_ = s.id;
+						static_cast<sio::object_message*>(m1.get())->insert("streamId", sio::int_message::create(s.id));
+						static_cast<sio::object_message*>(m1.get())->insert("slideShowMode", sio::bool_message::create(false));
+						static_cast<sio::object_message*>(m1.get())->insert("audio", sio::bool_message::create(s.audio));
+						static_cast<sio::object_message*>(m1.get())->insert("video", sio::bool_message::create(s.video));
+						static_cast<sio::object_message*>(m1.get())->insert("data", sio::bool_message::create(s.data));
+
+						l.push(m1);
+						l.push(sio::null_message::create());
+						LOG(INFO) << "send subscribe:" << to_json(*l.to_array_message());
+						sio_socket_->emit("subscribe", l, std::bind(&PeerConnectionClient::on_sio_subscribe_callback, this, std::placeholders::_1));
+					}
+				}
 			}
 		}
 	}
@@ -241,11 +309,32 @@ void PeerConnectionClient::DoConnect_licode()
 				LOG(INFO) << "sio_disconnect";
 				sio_socket_->close();
 			}));
+			sio_socket_->on("addStream", sio::socket::event_listener_aux([&](std::string const& name, sio::message::ptr const& data, bool isAck, sio::message::list &ack_resp) {
+				_lock.lock();
+				_cond.notify_all();
+				_lock.unlock();
+				std::string message = to_json(*data);
+				LOG(INFO) << "addStream:" << message;
+			}));
 			sio_socket_->on("signaling_message_erizo", sio::socket::event_listener_aux([&](std::string const& name, sio::message::ptr const& data, bool isAck, sio::message::list &ack_resp) {
 				_lock.lock();
 				_cond.notify_all();
 				_lock.unlock();
-				LOG(INFO) << "signaling_message_erizo:" << to_json(*data);
+				std::string message = to_json(*data);
+				LOG(INFO) << "signaling_message_erizo:" << message;
+				if (data->get_flag() == sio::message::flag_object) {
+					std::map<std::string, sio::message::ptr>& v = data->get_map();
+					if (v.find("mess") != v.end()) {
+						sio::message::ptr mess = v["mess"];
+						std::map<std::string, sio::message::ptr>& sdp = mess->get_map();
+						if (sdp.find("sdp") != sdp.end()) {
+							sio::message::ptr sdpstr = sdp["sdp"];
+							std::string sdp_s = sdpstr->get_string();
+							LOG(INFO) << "answer sdp:" << sdp_s;
+							callback_->OnMessageFromPeer(1, message);
+						}
+					}
+				}
 			}));
 			sio::message::ptr _message = sio::from_json(document);
 			sio_socket_->emit("token", _message, std::bind(&PeerConnectionClient::on_sio_token_callback, this, std::placeholders::_1));
@@ -646,3 +735,42 @@ void PeerConnectionClient::OnHttpsStatus(https_client_status status, const std::
 	throw std::logic_error("The method or operation is not implemented.");
 }
 
+void PeerConnectionClient::SendLicodeOffer(std::string & sdp)
+{
+	//{"name":"signaling_message", "args" : [{"streamId":324676613500816000, "msg" : {"type":"offer", "sdp" : <offer>}}, null]}
+	sio::message::list l;
+	sio::message::ptr m1 = sio::object_message::create();
+	static_cast<sio::object_message*>(m1.get())->insert("sdp", sdp);
+	static_cast<sio::object_message*>(m1.get())->insert("type", "offer");
+
+	sio::message::ptr  m = sio::object_message::create();
+	static_cast<sio::object_message*>(m.get())->insert("msg", m1);
+	static_cast<sio::object_message*>(m.get())->insert("streamId", sio::int_message::create(licode_streamId_));
+	
+	l.push(m);
+	l.push(sio::null_message::create());
+	LOG(INFO) << "send offer:" << to_json(*l.to_array_message());
+	sio_socket_->emit("signaling_message", l, std::bind(&PeerConnectionClient::on_sio_signaling_callback, this, std::placeholders::_1));
+}
+
+void PeerConnectionClient::SendLicodeCandidate(const std::string candidate)
+{
+	Document document;
+	document.Parse(candidate.c_str());
+	sio::message::ptr message = sio::from_json(document, std::vector<std::shared_ptr<const std::string> >());
+
+	//{"name":"signaling_message", "args" : [{"streamId":324676613500816000, "msg" : {"type":"candidate","candidate":{"sdpMLineIndex":0,"sdpMid":"sdparta_0","candidate":<candidate>}, null]}
+	sio::message::list l;
+	sio::message::ptr m1 = sio::object_message::create();
+	static_cast<sio::object_message*>(m1.get())->insert("candidate", message);
+	static_cast<sio::object_message*>(m1.get())->insert("type", "candidate");
+
+	sio::message::ptr  m = sio::object_message::create();
+	static_cast<sio::object_message*>(m.get())->insert("msg", m1);
+	static_cast<sio::object_message*>(m.get())->insert("streamId", sio::int_message::create(licode_streamId_));
+
+	l.push(m);
+	l.push(sio::null_message::create());
+	LOG(INFO) << "send candidate:" << to_json(*l.to_array_message());
+	sio_socket_->emit("signaling_message", l, std::bind(&PeerConnectionClient::on_sio_signaling_callback, this, std::placeholders::_1));
+}

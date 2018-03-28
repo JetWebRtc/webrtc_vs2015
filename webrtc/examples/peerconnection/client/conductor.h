@@ -132,6 +132,9 @@ class Conductor
   std::map<std::string, rtc::scoped_refptr<webrtc::MediaStreamInterface> >
       active_streams_;
   std::string server_;
-};
+  bool answer_received_;
+  int  ncandidate_gathered_;
+  void OnMessageFromLicode(int peer_id, const std::string& message);
+  };
 
 #endif  // WEBRTC_EXAMPLES_PEERCONNECTION_CLIENT_CONDUCTOR_H_

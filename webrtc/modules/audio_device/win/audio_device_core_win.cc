@@ -3572,7 +3572,7 @@ DWORD AudioDeviceWindowsCore::DoRenderThread()
                     }
                     if (nSamples != static_cast<int32_t>(_playBlockSize))
                     {
-                        WEBRTC_TRACE(kTraceWarning, kTraceAudioDevice, _id, "nSamples(%d) != _playBlockSize(%d)", nSamples, _playBlockSize);
+  //                      WEBRTC_TRACE(kTraceWarning, kTraceAudioDevice, _id, "nSamples(%d) != _playBlockSize(%d)", nSamples, _playBlockSize);
                     }
 
                     // Get the actual (stored) data

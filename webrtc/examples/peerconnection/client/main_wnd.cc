@@ -23,6 +23,7 @@ ATOM MainWnd::wnd_class_ = 0;
 const wchar_t MainWnd::kClassName[] = L"WebRTC_MainWnd";
 
 using rtc::sprintfn;
+HWND g_hMainWnd = NULL;
 
 namespace {
 
@@ -98,6 +99,8 @@ bool MainWnd::Create() {
 
   CreateChildWindows();
   SwitchToConnectUI();
+
+  g_hMainWnd = wnd_;
 
   return wnd_ != NULL;
 }
@@ -287,7 +290,62 @@ void MainWnd::OnPaint() {
       ::SelectObject(dc_mem, bmp_old);
       ::DeleteObject(bmp_mem);
       ::DeleteDC(dc_mem);
-    } else {
+    }
+	else if (ui_ == STREAMING && local_renderer) {
+		AutoLock<VideoRenderer> local_lock(local_renderer);
+
+		HDC dc_mem = ::CreateCompatibleDC(ps.hdc);
+		::SetStretchBltMode(dc_mem, HALFTONE);
+		int width = rc.right / 2;
+		int height = rc.bottom / 2;
+
+			// Set the map mode so that the ratio will be maintained for us.
+			HDC all_dc[] = { ps.hdc, dc_mem };
+			for (int i = 0; i < arraysize(all_dc); ++i) {
+				SetMapMode(all_dc[i], MM_ISOTROPIC);
+				SetWindowExtEx(all_dc[i], width, height, NULL);
+				SetViewportExtEx(all_dc[i], rc.right, rc.bottom, NULL);
+			}
+
+			HBITMAP bmp_mem = ::CreateCompatibleBitmap(ps.hdc, rc.right, rc.bottom);
+			HGDIOBJ bmp_old = ::SelectObject(dc_mem, bmp_mem);
+
+			POINT logical_area = { rc.right, rc.bottom };
+			DPtoLP(ps.hdc, &logical_area, 1);
+
+			HBRUSH brush = ::CreateSolidBrush(RGB(0, 0, 0));
+			RECT logical_rect = { 0, 0, logical_area.x, logical_area.y };
+			::FillRect(dc_mem, &logical_rect, brush);
+			::DeleteObject(brush);
+
+			int x = (logical_area.x / 2) - (width / 2);
+			int y = (logical_area.y / 2) - (height / 2);
+
+			StretchDIBits(dc_mem, x, y, width, height,
+				0, 0, width, height, image, &bmi, DIB_RGB_COLORS, SRCCOPY);
+
+			if ((rc.right - rc.left) > 200 && (rc.bottom - rc.top) > 200) {
+				const BITMAPINFO& bmi = local_renderer->bmi();
+				image = local_renderer->image();
+				int thumb_width = bmi.bmiHeader.biWidth / 4;
+				int thumb_height = abs(bmi.bmiHeader.biHeight) / 4;
+				StretchDIBits(dc_mem,
+					logical_area.x - thumb_width - 10,
+					logical_area.y - thumb_height - 10,
+					thumb_width, thumb_height,
+					0, 0, bmi.bmiHeader.biWidth, -bmi.bmiHeader.biHeight,
+					image, &bmi, DIB_RGB_COLORS, SRCCOPY);
+			}
+
+			BitBlt(ps.hdc, 0, 0, logical_area.x, logical_area.y,
+				dc_mem, 0, 0, SRCCOPY);
+
+			// Cleanup.
+			::SelectObject(dc_mem, bmp_old);
+			::DeleteObject(bmp_mem);
+			::DeleteDC(dc_mem);
+	}
+	else {
       // We're still waiting for the video stream to be initialized.
       HBRUSH brush = ::CreateSolidBrush(RGB(0, 0, 0));
       ::FillRect(ps.hdc, &rc, brush);
@@ -386,6 +444,10 @@ bool MainWnd::OnMessage(UINT msg, WPARAM wp, LPARAM lp, LRESULT* result) {
       if (callback_)
         callback_->Close();
       break;
+	case WM_USER:
+	{
+		callback_->ConnectToPeer(1);
+	}
   }
   return false;
 }

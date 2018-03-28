@@ -30,6 +30,7 @@ const char kCandidateSdpName[] = "candidate";
 // Names used for a SessionDescription JSON object.
 const char kSessionDescriptionTypeName[] = "type";
 const char kSessionDescriptionSdpName[] = "sdp";
+extern  bool FLAG_licode;
 
 #define DTLS_ON  true
 #define DTLS_OFF false
@@ -57,7 +58,9 @@ Conductor::Conductor(PeerConnectionClient* client, MainWindow* main_wnd)
   : peer_id_(-1),
     loopback_(false),
     client_(client),
-    main_wnd_(main_wnd) {
+    main_wnd_(main_wnd),
+	answer_received_(false),
+	ncandidate_gathered_(0){
   client_->RegisterObserver(this);
   main_wnd->RegisterObserver(this);
 }
@@ -188,8 +191,24 @@ void Conductor::OnIceCandidate(const webrtc::IceCandidateInterface* candidate) {
     LOG(LS_ERROR) << "Failed to serialize candidate";
     return;
   }
-  jmessage[kCandidateSdpName] = sdp;
-  SendMessage(writer.write(jmessage));
+  jmessage[kCandidateSdpName] = "a=" + sdp;
+  if (FLAG_licode) {
+	  if (true) { //answer_received_) {
+		  client_->SendLicodeCandidate(writer.write(jmessage));
+		  ncandidate_gathered_++;
+		  if (ncandidate_gathered_ == 4) {
+			  jmessage[kCandidateSdpMidName] = "end";
+			  jmessage[kCandidateSdpMlineIndexName] = -1;
+			  client_->SendLicodeCandidate(writer.write(jmessage));
+		  }
+	  }
+	  else {
+		  LOG(LS_INFO) << "candidate before received answer:" << writer.write(jmessage);
+	  }
+  }
+  else {
+	  SendMessage(writer.write(jmessage));
+  }
 }
 
 //
@@ -247,6 +266,11 @@ void Conductor::OnMessageFromPeer(int peer_id, const std::string& message) {
     LOG(WARNING) << "Received a message from unknown peer while already in a "
                     "conversation with a different peer.";
     return;
+  }
+
+  if (FLAG_licode) {
+	  OnMessageFromLicode(1, message);
+	  return;
   }
 
   Json::Reader reader;
@@ -514,6 +538,8 @@ void Conductor::UIThreadCallback(int msg_id, void* data) {
   }
 }
 
+extern bool FLAG_licode;
+
 void Conductor::OnSuccess(webrtc::SessionDescriptionInterface* desc) {
   peer_connection_->SetLocalDescription(
       DummySetSessionDescriptionObserver::Create(), desc);
@@ -531,11 +557,16 @@ void Conductor::OnSuccess(webrtc::SessionDescriptionInterface* desc) {
     return;
   }
 
-  Json::StyledWriter writer;
-  Json::Value jmessage;
-  jmessage[kSessionDescriptionTypeName] = desc->type();
-  jmessage[kSessionDescriptionSdpName] = sdp;
-  SendMessage(writer.write(jmessage));
+  if (FLAG_licode) {
+	  client_->SendLicodeOffer(sdp);
+  }
+  else {
+	  Json::StyledWriter writer;
+	  Json::Value jmessage;
+	  jmessage[kSessionDescriptionTypeName] = desc->type();
+	  jmessage[kSessionDescriptionSdpName] = sdp;
+	  SendMessage(writer.write(jmessage));
+  }
 }
 
 void Conductor::OnFailure(const std::string& error) {
@@ -545,4 +576,33 @@ void Conductor::OnFailure(const std::string& error) {
 void Conductor::SendMessage(const std::string& json_object) {
   std::string* msg = new std::string(json_object);
   main_wnd_->QueueUIThreadCallback(SEND_MESSAGE_TO_PEER, msg);
+}
+
+void Conductor::OnMessageFromLicode(int peer_id, const std::string& message)
+{
+	Document document;
+	document.Parse(message.c_str());
+	if (document.HasMember("mess")) {
+		Value mess;
+		mess = document["mess"];
+		if (mess.HasMember("sdp")) {
+			Value sdp;
+			sdp = mess["sdp"];
+			std::string sdp_str = sdp.GetString();
+			webrtc::SdpParseError error;
+			std::string type = "answer";
+			webrtc::SessionDescriptionInterface* session_description(
+				webrtc::CreateSessionDescription(type, sdp_str, &error));
+			if (!session_description) {
+				LOG(WARNING) << "Can't parse received session description message. "
+					<< "SdpParseError was: " << error.description;
+				return;
+			}
+			LOG(INFO) << " Received session description :" << sdp_str;
+			peer_connection_->SetRemoteDescription(
+				DummySetSessionDescriptionObserver::Create(), session_description);
+			answer_received_ = true;
+			ncandidate_gathered_ = 0;
+		}
+	}
 }
