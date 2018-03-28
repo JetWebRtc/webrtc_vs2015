@@ -18,6 +18,17 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\webrtc\modules\audio_coding\codecs\opus\audio_decoder_opus.cc" />
+    <ClCompile Include="..\..\webrtc\modules\audio_coding\codecs\opus\audio_encoder_opus.cc" />
+    <ClCompile Include="..\..\webrtc\modules\audio_coding\codecs\opus\opus_interface.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\webrtc\modules\audio_coding\codecs\opus\audio_decoder_opus.h" />
+    <ClInclude Include="..\..\webrtc\modules\audio_coding\codecs\opus\audio_encoder_opus.h" />
+    <ClInclude Include="..\..\webrtc\modules\audio_coding\codecs\opus\opus_inst.h" />
+    <ClInclude Include="..\..\webrtc\modules\audio_coding\codecs\opus\opus_interface.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{CEBE513E-A733-4338-A06B-B8D674FF8E35}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -81,7 +92,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\opus\x86-windows-cl14\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(webrtc_root)\third_party\opus\x86-windows-cl14\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
