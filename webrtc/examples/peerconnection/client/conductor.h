@@ -133,7 +133,6 @@ class Conductor
       active_streams_;
   std::string server_;
   bool answer_received_;
-  int  ncandidate_gathered_;
   void OnMessageFromLicode(int peer_id, const std::string& message);
   };
 

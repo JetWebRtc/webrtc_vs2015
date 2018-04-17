@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2012 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -26,6 +26,7 @@
 using namespace rapidjson;
 
 extern bool FLAG_licode;
+extern int FLAG_licode_client;
 
 using rtc::sprintfn;
 
@@ -180,13 +181,13 @@ extern HWND g_hMainWnd;
 
 void PeerConnectionClient::on_sio_signaling_callback(sio::message::list const& ack)
 {
-	LOG(INFO) << "sio_token_callback:" << to_json(*ack.to_array_message());
+	LOG(INFO) << "on_sio_signaling_callback:" << to_json(*ack.to_array_message());
 }
 
 void PeerConnectionClient::on_sio_publish_callback(sio::message::list const& ack)
 {
-	LOG(INFO) << "sio_token_callback:" << to_json(*ack.to_array_message());
-	if (ack.size() == 1) {
+	LOG(INFO) << "on_sio_publish_callback:" << to_json(*ack.to_array_message());
+	if (ack.size() >= 1) {
 		if (ack.at(0)->get_flag() == sio::message::flag_integer) {
 			licode_streamId_ = ack.at(0)->get_int();
 			LOG(INFO) << "stream Id:" << licode_streamId_;
@@ -337,7 +338,19 @@ void PeerConnectionClient::DoConnect_licode()
 				}
 			}));
 			sio::message::ptr _message = sio::from_json(document);
-			sio_socket_->emit("token", _message, std::bind(&PeerConnectionClient::on_sio_token_callback, this, std::placeholders::_1));
+			if (FLAG_licode_client == 1) {
+				// protocol changed since the commit:
+				//          Author: Javier Cerviño <jcague@gmail.com>
+				//			Date:   Fri Mar 9 10 : 21 : 00 2018 + 0100
+				//			Add a new API to enable Single PC in ErizoClient(#1165)
+				sio::message::ptr connect_message = sio::object_message::create();
+				static_cast<sio::object_message*>(connect_message.get())->insert("singlePC", sio::bool_message::create(false));
+				static_cast<sio::object_message*>(connect_message.get())->insert("token", _message);
+				sio_socket_->emit("token", connect_message, std::bind(&PeerConnectionClient::on_sio_token_callback, this, std::placeholders::_1));
+			}
+			else if (FLAG_licode_client == 0) {
+				sio_socket_->emit("token", _message, std::bind(&PeerConnectionClient::on_sio_token_callback, this, std::placeholders::_1));
+			}
 		}
 	}
 }

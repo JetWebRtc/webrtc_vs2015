@@ -30,5 +30,6 @@ DEFINE_bool(autocall, false, "Call the first available other client on "
   "the server without user intervention.  Note: this flag should only be set "
   "to true on one of the two clients.");
 DEFINE_bool(licode, false, "connect to licode BasicExample");
+DEFINE_int(licode_client, 1, "connect to licode BasicExample");
 
 #endif  // WEBRTC_EXAMPLES_PEERCONNECTION_CLIENT_FLAGDEFS_H_

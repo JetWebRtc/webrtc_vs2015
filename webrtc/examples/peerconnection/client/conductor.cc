@@ -59,8 +59,7 @@ Conductor::Conductor(PeerConnectionClient* client, MainWindow* main_wnd)
     loopback_(false),
     client_(client),
     main_wnd_(main_wnd),
-	answer_received_(false),
-	ncandidate_gathered_(0){
+	answer_received_(false){
   client_->RegisterObserver(this);
   main_wnd->RegisterObserver(this);
 }
@@ -195,12 +194,6 @@ void Conductor::OnIceCandidate(const webrtc::IceCandidateInterface* candidate) {
   if (FLAG_licode) {
 	  if (true) { //answer_received_) {
 		  client_->SendLicodeCandidate(writer.write(jmessage));
-		  ncandidate_gathered_++;
-		  if (ncandidate_gathered_ == 4) {
-			  jmessage[kCandidateSdpMidName] = "end";
-			  jmessage[kCandidateSdpMlineIndexName] = -1;
-			  client_->SendLicodeCandidate(writer.write(jmessage));
-		  }
 	  }
 	  else {
 		  LOG(LS_INFO) << "candidate before received answer:" << writer.write(jmessage);
@@ -602,7 +595,6 @@ void Conductor::OnMessageFromLicode(int peer_id, const std::string& message)
 			peer_connection_->SetRemoteDescription(
 				DummySetSessionDescriptionObserver::Create(), session_description);
 			answer_received_ = true;
-			ncandidate_gathered_ = 0;
 		}
 	}
 }
