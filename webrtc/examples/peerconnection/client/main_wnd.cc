@@ -232,72 +232,20 @@ void MainWnd::OnPaint() {
 
   VideoRenderer* local_renderer = local_renderer_.get();
   VideoRenderer* remote_renderer = remote_renderer_.get();
-  if (ui_ == STREAMING && remote_renderer && local_renderer) {
-    AutoLock<VideoRenderer> local_lock(local_renderer);
-    AutoLock<VideoRenderer> remote_lock(remote_renderer);
+  if (ui_ == STREAMING  && local_renderer) {
+	AutoLock<VideoRenderer> local_lock(local_renderer);
+	bool bShowLocal = true;
+	if (remote_renderer) {
+		AutoLock<VideoRenderer> remote_lock(remote_renderer);
 
-    const BITMAPINFO& bmi = remote_renderer->bmi();
-    int height = abs(bmi.bmiHeader.biHeight);
-    int width = bmi.bmiHeader.biWidth;
+		const BITMAPINFO& bmi = remote_renderer->bmi();
+		int height = abs(bmi.bmiHeader.biHeight);
+		int width = bmi.bmiHeader.biWidth;
 
-    const uint8_t* image = remote_renderer->image();
-    if (image != NULL) {
-      HDC dc_mem = ::CreateCompatibleDC(ps.hdc);
-      ::SetStretchBltMode(dc_mem, HALFTONE);
-
-      // Set the map mode so that the ratio will be maintained for us.
-      HDC all_dc[] = { ps.hdc, dc_mem };
-      for (int i = 0; i < arraysize(all_dc); ++i) {
-        SetMapMode(all_dc[i], MM_ISOTROPIC);
-        SetWindowExtEx(all_dc[i], width, height, NULL);
-        SetViewportExtEx(all_dc[i], rc.right, rc.bottom, NULL);
-      }
-
-      HBITMAP bmp_mem = ::CreateCompatibleBitmap(ps.hdc, rc.right, rc.bottom);
-      HGDIOBJ bmp_old = ::SelectObject(dc_mem, bmp_mem);
-
-      POINT logical_area = { rc.right, rc.bottom };
-      DPtoLP(ps.hdc, &logical_area, 1);
-
-      HBRUSH brush = ::CreateSolidBrush(RGB(0, 0, 0));
-      RECT logical_rect = {0, 0, logical_area.x, logical_area.y };
-      ::FillRect(dc_mem, &logical_rect, brush);
-      ::DeleteObject(brush);
-
-      int x = (logical_area.x / 2) - (width / 2);
-      int y = (logical_area.y / 2) - (height / 2);
-
-      StretchDIBits(dc_mem, x, y, width, height,
-                    0, 0, width, height, image, &bmi, DIB_RGB_COLORS, SRCCOPY);
-
-      if ((rc.right - rc.left) > 200 && (rc.bottom - rc.top) > 200) {
-        const BITMAPINFO& bmi = local_renderer->bmi();
-        image = local_renderer->image();
-        int thumb_width = bmi.bmiHeader.biWidth / 4;
-        int thumb_height = abs(bmi.bmiHeader.biHeight) / 4;
-        StretchDIBits(dc_mem,
-            logical_area.x - thumb_width - 10,
-            logical_area.y - thumb_height - 10,
-            thumb_width, thumb_height,
-            0, 0, bmi.bmiHeader.biWidth, -bmi.bmiHeader.biHeight,
-            image, &bmi, DIB_RGB_COLORS, SRCCOPY);
-      }
-
-      BitBlt(ps.hdc, 0, 0, logical_area.x, logical_area.y,
-             dc_mem, 0, 0, SRCCOPY);
-
-      // Cleanup.
-      ::SelectObject(dc_mem, bmp_old);
-      ::DeleteObject(bmp_mem);
-      ::DeleteDC(dc_mem);
-    }
-	else if (ui_ == STREAMING && local_renderer) {
-		AutoLock<VideoRenderer> local_lock(local_renderer);
-
-		HDC dc_mem = ::CreateCompatibleDC(ps.hdc);
-		::SetStretchBltMode(dc_mem, HALFTONE);
-		int width = rc.right / 2;
-		int height = rc.bottom / 2;
+		const uint8_t* image = remote_renderer->image();
+		if (image != NULL) {
+			HDC dc_mem = ::CreateCompatibleDC(ps.hdc);
+			::SetStretchBltMode(dc_mem, HALFTONE);
 
 			// Set the map mode so that the ratio will be maintained for us.
 			HDC all_dc[] = { ps.hdc, dc_mem };
@@ -344,8 +292,65 @@ void MainWnd::OnPaint() {
 			::SelectObject(dc_mem, bmp_old);
 			::DeleteObject(bmp_mem);
 			::DeleteDC(dc_mem);
+			bShowLocal = false;
+		}
 	}
-	else {
+
+	if(bShowLocal) {
+
+			HDC dc_mem = ::CreateCompatibleDC(ps.hdc);
+			::SetStretchBltMode(dc_mem, HALFTONE);
+			int width = rc.right / 2;
+			int height = rc.bottom / 2;
+
+			// Set the map mode so that the ratio will be maintained for us.
+			HDC all_dc[] = { ps.hdc, dc_mem };
+			for (int i = 0; i < arraysize(all_dc); ++i) {
+				SetMapMode(all_dc[i], MM_ISOTROPIC);
+				SetWindowExtEx(all_dc[i], width, height, NULL);
+				SetViewportExtEx(all_dc[i], rc.right, rc.bottom, NULL);
+			}
+
+			HBITMAP bmp_mem = ::CreateCompatibleBitmap(ps.hdc, rc.right, rc.bottom);
+			HGDIOBJ bmp_old = ::SelectObject(dc_mem, bmp_mem);
+
+			POINT logical_area = { rc.right, rc.bottom };
+			DPtoLP(ps.hdc, &logical_area, 1);
+
+			HBRUSH brush = ::CreateSolidBrush(RGB(0, 0, 0));
+			RECT logical_rect = { 0, 0, logical_area.x, logical_area.y };
+			::FillRect(dc_mem, &logical_rect, brush);
+			::DeleteObject(brush);
+
+			int x = (logical_area.x / 2) - (width / 2);
+			int y = (logical_area.y / 2) - (height / 2);
+
+			//			StretchDIBits(dc_mem, x, y, width, height,
+			//				0, 0, width, height, image, &bmi, DIB_RGB_COLORS, SRCCOPY);
+
+			if ((rc.right - rc.left) > 200 && (rc.bottom - rc.top) > 200) {
+				const BITMAPINFO& bmi = local_renderer->bmi();
+				const uint8_t* image = image = local_renderer->image();
+				int thumb_width = bmi.bmiHeader.biWidth / 4;
+				int thumb_height = abs(bmi.bmiHeader.biHeight) / 4;
+				StretchDIBits(dc_mem,
+					logical_area.x - thumb_width - 10,
+					logical_area.y - thumb_height - 10,
+					thumb_width, thumb_height,
+					0, 0, bmi.bmiHeader.biWidth, -bmi.bmiHeader.biHeight,
+					image, &bmi, DIB_RGB_COLORS, SRCCOPY);
+			}
+
+			BitBlt(ps.hdc, 0, 0, logical_area.x, logical_area.y,
+				dc_mem, 0, 0, SRCCOPY);
+
+			// Cleanup.
+			::SelectObject(dc_mem, bmp_old);
+			::DeleteObject(bmp_mem);
+			::DeleteDC(dc_mem);
+		}
+	}
+	else if(ui_ == STREAMING) {
       // We're still waiting for the video stream to be initialized.
       HBRUSH brush = ::CreateSolidBrush(RGB(0, 0, 0));
       ::FillRect(ps.hdc, &rc, brush);
@@ -364,7 +369,6 @@ void MainWnd::OnPaint() {
       ::DrawTextA(ps.hdc, text.c_str(), -1, &rc,
           DT_SINGLELINE | DT_CENTER | DT_VCENTER);
       ::SelectObject(ps.hdc, old_font);
-    }
   } else {
     HBRUSH brush = ::CreateSolidBrush(::GetSysColor(COLOR_WINDOW));
     ::FillRect(ps.hdc, &rc, brush);
@@ -443,6 +447,7 @@ bool MainWnd::OnMessage(UINT msg, WPARAM wp, LPARAM lp, LRESULT* result) {
     case WM_CLOSE:
       if (callback_)
         callback_->Close();
+	  PostQuitMessage(0);
       break;
 	case WM_USER:
 	{

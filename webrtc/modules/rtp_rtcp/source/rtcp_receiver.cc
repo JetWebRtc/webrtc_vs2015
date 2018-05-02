@@ -761,7 +761,8 @@ void RTCPReceiver::HandlePli(const CommonHeader& rtcp_block,
     return;
   }
 
-  if (main_ssrc_ == pli.media_ssrc()) {
+  if (main_ssrc_ == pli.media_ssrc())
+  {
     TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("webrtc_rtp"), "PLI");
 
     ++packet_type_counter_.pli_packets;

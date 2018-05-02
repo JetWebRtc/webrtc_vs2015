@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LocalDebuggerCommandArguments>--licode --server=hubin3.xuedianyun.com --port=3004 --licode_client=1</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>--licode_client_offer  --server=hubin4.xuedianyun.com --port=3004 --licode_client=0  --licode</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>

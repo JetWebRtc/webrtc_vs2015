@@ -26,7 +26,9 @@
 using namespace rapidjson;
 
 extern bool FLAG_licode;
+extern bool FLAG_licode_client_offer;
 extern int FLAG_licode_client;
+extern HWND g_hMainWnd;
 
 using rtc::sprintfn;
 
@@ -129,6 +131,10 @@ void PeerConnectionClient::Connect(const std::string& server, int port,
     return;
   }
 
+  if (!FLAG_licode_client_offer) {
+	  ::PostMessage(g_hMainWnd, WM_USER, 0, 0);
+  }
+
   if (port <= 0)
     port = kDefaultServerPort;
 
@@ -177,8 +183,6 @@ void PeerConnectionClient::on_sio_fail()
 	LOG(INFO) << "sio failed " << std::endl;
 }
 
-extern HWND g_hMainWnd;
-
 void PeerConnectionClient::on_sio_signaling_callback(sio::message::list const& ack)
 {
 	LOG(INFO) << "on_sio_signaling_callback:" << to_json(*ack.to_array_message());
@@ -193,7 +197,9 @@ void PeerConnectionClient::on_sio_publish_callback(sio::message::list const& ack
 			LOG(INFO) << "stream Id:" << licode_streamId_;
 			}
 	}
-	::PostMessage(g_hMainWnd, WM_USER, 0, 0);
+	if (FLAG_licode_client_offer) {
+		::PostMessage(g_hMainWnd, WM_USER, 0, 0);
+	}
 }
 
 void PeerConnectionClient::on_sio_subscribe_callback(sio::message::list const& ack)
@@ -205,7 +211,9 @@ void PeerConnectionClient::on_sio_subscribe_callback(sio::message::list const& a
 			LOG(INFO) << "stream Id:" << licode_streamId_;
 		}
 	}
-	::PostMessage(g_hMainWnd, WM_USER, 0, 0);
+	if (FLAG_licode_client_offer) {
+		::PostMessage(g_hMainWnd, WM_USER, 0, 0);
+	}
 }
 
 void PeerConnectionClient::on_sio_token_callback(sio::message::list const& ack)
@@ -224,6 +232,7 @@ void PeerConnectionClient::on_sio_token_callback(sio::message::list const& ack)
 						sio::message::ptr  streams = m["streams"];
 						if (streams->get_flag() == sio::message::flag_array) {
 							std::vector<sio::message::ptr> & v = streams->get_vector();
+							LOG(INFO) << "streams in room:" << v.size();
 							if (v.size() > 0) {
 								for (int i = 0; i < v.size(); i++) {
 									std::map<std::string, sio::message::ptr> & stream = v[i]->get_map();
@@ -237,11 +246,13 @@ void PeerConnectionClient::on_sio_token_callback(sio::message::list const& ack)
 							}
 						}
 					}
-
 				}
 				if (bpublish) {
 					licode_state_ = sio_token_success;
-					char * publish_param = "{\"state\":\"erizo\",\"audio\":true,\"video\":true,\"data\":true,\"minVideoBW\":0,\"attributes\":{\"name\":\"test\"}}";
+					char * publish_param = "{\"state\":\"erizo\",\"audio\":true,\"video\":true,\"data\":true,\"minVideoBW\":0,\"attributes\":{\"name\":\"test_webrtc\"}}";
+					if (!FLAG_licode_client_offer) {
+						publish_param = "{\"state\":\"erizo\",\"audio\":true,\"video\":true,\"data\":true,\"minVideoBW\":0,\"attributes\":{\"name\":\"test_webrtc\"},\"createOffer\": {\"audio\":true ,\"video\":true, \"bundle\":false}}";
+					}
 					Document document;
 					document.Parse(publish_param);
 					sio::message::ptr _message = sio::from_json(document, std::vector<std::shared_ptr<const std::string> >());
@@ -754,11 +765,18 @@ void PeerConnectionClient::SendLicodeOffer(std::string & sdp)
 	sio::message::list l;
 	sio::message::ptr m1 = sio::object_message::create();
 	static_cast<sio::object_message*>(m1.get())->insert("sdp", sdp);
-	static_cast<sio::object_message*>(m1.get())->insert("type", "offer");
+	if (FLAG_licode_client_offer) {
+		static_cast<sio::object_message*>(m1.get())->insert("type", "offer");
+	}
+	else {
+		static_cast<sio::object_message*>(m1.get())->insert("type", "answer");
+	}
+	
 
 	sio::message::ptr  m = sio::object_message::create();
 	static_cast<sio::object_message*>(m.get())->insert("msg", m1);
 	static_cast<sio::object_message*>(m.get())->insert("streamId", sio::int_message::create(licode_streamId_));
+	static_cast<sio::object_message*>(m.get())->insert("browser", sio::string_message::create("wnc"));
 	
 	l.push(m);
 	l.push(sio::null_message::create());

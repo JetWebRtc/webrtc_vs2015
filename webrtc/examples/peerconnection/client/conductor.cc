@@ -31,6 +31,7 @@ const char kCandidateSdpName[] = "candidate";
 const char kSessionDescriptionTypeName[] = "type";
 const char kSessionDescriptionSdpName[] = "sdp";
 extern  bool FLAG_licode;
+extern  bool FLAG_licode_client_offer;
 
 #define DTLS_ON  true
 #define DTLS_OFF false
@@ -194,6 +195,12 @@ void Conductor::OnIceCandidate(const webrtc::IceCandidateInterface* candidate) {
   if (FLAG_licode) {
 	  if (true) { //answer_received_) {
 		  client_->SendLicodeCandidate(writer.write(jmessage));
+		  if (candidate->sdp_mline_index() == 1) {
+				  jmessage[kCandidateSdpMidName] = "end";
+				  jmessage[kCandidateSdpMlineIndexName] = -1;
+				  jmessage[kCandidateSdpName] = "end";
+				  client_->SendLicodeCandidate(writer.write(jmessage));
+		  }
 	  }
 	  else {
 		  LOG(LS_INFO) << "candidate before received answer:" << writer.write(jmessage);
@@ -379,7 +386,9 @@ void Conductor::ConnectToPeer(int peer_id) {
 
   if (InitializePeerConnection()) {
     peer_id_ = peer_id;
-    peer_connection_->CreateOffer(this, NULL);
+	if (FLAG_licode_client_offer || !FLAG_licode) {
+		peer_connection_->CreateOffer(this, NULL);
+	}
   } else {
     main_wnd_->MessageBox("Error", "Failed to initialize PeerConnection", true);
   }
@@ -584,6 +593,9 @@ void Conductor::OnMessageFromLicode(int peer_id, const std::string& message)
 			std::string sdp_str = sdp.GetString();
 			webrtc::SdpParseError error;
 			std::string type = "answer";
+			if (!FLAG_licode_client_offer) {
+				type = "offer";
+			}
 			webrtc::SessionDescriptionInterface* session_description(
 				webrtc::CreateSessionDescription(type, sdp_str, &error));
 			if (!session_description) {
@@ -595,6 +607,9 @@ void Conductor::OnMessageFromLicode(int peer_id, const std::string& message)
 			peer_connection_->SetRemoteDescription(
 				DummySetSessionDescriptionObserver::Create(), session_description);
 			answer_received_ = true;
+			if (type == "offer") {
+					peer_connection_->CreateAnswer(this, NULL);
+			}
 		}
 	}
 }
