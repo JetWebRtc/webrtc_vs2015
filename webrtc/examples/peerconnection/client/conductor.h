@@ -31,6 +31,13 @@ namespace cricket {
 class VideoRenderer;
 }  // namespace cricket
 
+class CandidateBuffer {
+public:
+	std::string midName;
+	int midIdx;
+	std::string sdp;
+};
+
 class Conductor
   : public webrtc::PeerConnectionObserver,
     public webrtc::CreateSessionDescriptionObserver,
@@ -59,6 +66,7 @@ class Conductor
   void DeletePeerConnection();
   void EnsureStreamingUI();
   void AddStreams();
+  void AddStreamsForSubscribe();
   std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice();
 
   //
@@ -133,6 +141,8 @@ class Conductor
       active_streams_;
   std::string server_;
   bool answer_received_;
+  std::deque<CandidateBuffer > pending_candidate_;
+  void SendBufferedCandidate();
   void OnMessageFromLicode(int peer_id, const std::string& message);
   };
 

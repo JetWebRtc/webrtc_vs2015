@@ -31,6 +31,7 @@ DEFINE_bool(autocall, false, "Call the first available other client on "
   "to true on one of the two clients.");
 DEFINE_bool(licode, false, "connect to licode BasicExample");
 DEFINE_bool(licode_client_offer, true, "create offer when publish");
+DEFINE_bool(licode_subscribe, true, "subscribe if there is a stream in the room when connect");
 DEFINE_int(licode_client, 1, "connect to licode BasicExample version");
 
 #endif  // WEBRTC_EXAMPLES_PEERCONNECTION_CLIENT_FLAGDEFS_H_

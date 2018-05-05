@@ -27,6 +27,7 @@ using namespace rapidjson;
 
 extern bool FLAG_licode;
 extern bool FLAG_licode_client_offer;
+extern bool FLAG_licode_subscribe;
 extern int FLAG_licode_client;
 extern HWND g_hMainWnd;
 
@@ -73,7 +74,8 @@ PeerConnectionClient::PeerConnectionClient()
     state_(NOT_CONNECTED),
     my_id_(-1),
 	sio_connect_finish_(false),
-	sio_socket_(NULL){
+	sio_socket_(NULL),
+	licode_publish_ready_(false){
 }
 
 PeerConnectionClient::~PeerConnectionClient() {
@@ -216,6 +218,11 @@ void PeerConnectionClient::on_sio_subscribe_callback(sio::message::list const& a
 	}
 }
 
+void PeerConnectionClient::on_sio_record_callback(sio::message::list const& ack)
+{
+	LOG(INFO) << "on_sio_record_callback:" << to_json(*ack.to_array_message());
+}
+
 void PeerConnectionClient::on_sio_token_callback(sio::message::list const& ack)
 {
 	LOG(INFO) << "sio_token_callback:" << to_json(*ack.to_array_message());
@@ -242,6 +249,9 @@ void PeerConnectionClient::on_sio_token_callback(sio::message::list const& ack)
 									s.video = stream["video"]->get_bool();
 									s.data = stream["data"]->get_bool();
 									licode_streams_[s.id] = s;
+								}
+								if (FLAG_licode_subscribe) {
+									bpublish = false;
 								}
 							}
 						}
@@ -271,6 +281,15 @@ void PeerConnectionClient::on_sio_token_callback(sio::message::list const& ack)
 						static_cast<sio::object_message*>(m1.get())->insert("audio", sio::bool_message::create(s.audio));
 						static_cast<sio::object_message*>(m1.get())->insert("video", sio::bool_message::create(s.video));
 						static_cast<sio::object_message*>(m1.get())->insert("data", sio::bool_message::create(s.data));
+
+						if (!FLAG_licode_client_offer) {
+							sio::message::ptr createOffer = sio::object_message::create();
+							static_cast<sio::object_message*>(createOffer.get())->insert("audio", sio::bool_message::create(true));
+							static_cast<sio::object_message*>(createOffer.get())->insert("video", sio::bool_message::create(true));
+							static_cast<sio::object_message*>(createOffer.get())->insert("data", sio::bool_message::create(false));
+							static_cast<sio::object_message*>(createOffer.get())->insert("bundle", sio::bool_message::create(false));
+							static_cast<sio::object_message*>(m1.get())->insert("createOffer", createOffer);
+						}
 
 						l.push(m1);
 						l.push(sio::null_message::create());
@@ -342,8 +361,27 @@ void PeerConnectionClient::DoConnect_licode()
 						if (sdp.find("sdp") != sdp.end()) {
 							sio::message::ptr sdpstr = sdp["sdp"];
 							std::string sdp_s = sdpstr->get_string();
-							LOG(INFO) << "answer sdp:" << sdp_s;
+							if (sdp.find("type") != sdp.end()) {
+								sio::message::ptr typestr = sdp["type"];
+								std::string type_s = typestr->get_string();
+								LOG(INFO) << "type:" << type_s;
+							}
+							LOG(INFO) << "sdp:" << sdp_s;
 							callback_->OnMessageFromPeer(1, message);
+						}
+						else {
+							sio::message::ptr typeobject = sdp["type"];
+							std::string type = typeobject->get_string();
+							if (type == "ready" && !FLAG_licode_subscribe) {
+								licode_publish_ready_ = true;
+								sio::message::ptr id = v["streamId"];
+								LOG(INFO) << "stream ready:" << id->get_int();
+								sio::message::ptr record = sio::object_message::create();
+								static_cast<sio::object_message*>(record.get())->insert("to", sio::int_message::create(licode_streamId_));
+
+								sio_socket_->emit("startRecorder", record, std::bind(&PeerConnectionClient::on_sio_record_callback, this, std::placeholders::_1));
+
+							}
 						}
 					}
 				}

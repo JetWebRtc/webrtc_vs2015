@@ -32,6 +32,7 @@ const char kSessionDescriptionTypeName[] = "type";
 const char kSessionDescriptionSdpName[] = "sdp";
 extern  bool FLAG_licode;
 extern  bool FLAG_licode_client_offer;
+extern  bool FLAG_licode_subscribe;
 
 #define DTLS_ON  true
 #define DTLS_OFF false
@@ -96,7 +97,14 @@ bool Conductor::InitializePeerConnection() {
         "CreatePeerConnection failed", true);
     DeletePeerConnection();
   }
-  AddStreams();
+
+  if (!FLAG_licode_subscribe || !FLAG_licode) {
+	  AddStreams();
+  }
+  else {
+	 // AddStreamsForSubscribe();
+  }
+
   return peer_connection_.get() != NULL;
 }
 
@@ -193,22 +201,44 @@ void Conductor::OnIceCandidate(const webrtc::IceCandidateInterface* candidate) {
   }
   jmessage[kCandidateSdpName] = "a=" + sdp;
   if (FLAG_licode) {
-	  if (true) { //answer_received_) {
+	  if (answer_received_) { //answer_received_) {
 		  client_->SendLicodeCandidate(writer.write(jmessage));
+#if 0
 		  if (candidate->sdp_mline_index() == 1) {
 				  jmessage[kCandidateSdpMidName] = "end";
 				  jmessage[kCandidateSdpMlineIndexName] = -1;
 				  jmessage[kCandidateSdpName] = "end";
 				  client_->SendLicodeCandidate(writer.write(jmessage));
 		  }
+#endif
 	  }
 	  else {
 		  LOG(LS_INFO) << "candidate before received answer:" << writer.write(jmessage);
+		  CandidateBuffer b;
+		  b.midName = candidate->sdp_mid();
+		  b.midIdx = candidate->sdp_mline_index();
+		  b.sdp = "a=" + sdp;
+		  pending_candidate_.push_back(b);
 	  }
   }
   else {
 	  SendMessage(writer.write(jmessage));
   }
+}
+
+void Conductor::SendBufferedCandidate() {
+	while (pending_candidate_.size()) {
+		CandidateBuffer b = pending_candidate_.front();
+		pending_candidate_.pop_front();
+
+		Json::StyledWriter writer;
+		Json::Value jmessage;
+
+		jmessage[kCandidateSdpMidName] = b.midName;
+		jmessage[kCandidateSdpMlineIndexName] = b.midIdx;
+		jmessage[kCandidateSdpName] = b.sdp;
+		client_->SendLicodeCandidate(writer.write(jmessage));
+	}
 }
 
 //
@@ -386,8 +416,17 @@ void Conductor::ConnectToPeer(int peer_id) {
 
   if (InitializePeerConnection()) {
     peer_id_ = peer_id;
-	if (FLAG_licode_client_offer || !FLAG_licode) {
+	if (!FLAG_licode) {
 		peer_connection_->CreateOffer(this, NULL);
+	}
+	else if (FLAG_licode_client_offer) {
+		if (FLAG_licode_subscribe) {
+			webrtc::PeerConnectionInterface::RTCOfferAnswerOptions opt = webrtc::PeerConnectionInterface::RTCOfferAnswerOptions(1,1,false,false,true);
+            peer_connection_->CreateOffer(this, opt);
+		}
+		else {
+			peer_connection_->CreateOffer(this, NULL);
+		}
 	}
   } else {
     main_wnd_->MessageBox("Error", "Failed to initialize PeerConnection", true);
@@ -425,19 +464,48 @@ std::unique_ptr<cricket::VideoCapturer> Conductor::OpenVideoCaptureDevice() {
 }
 
 void Conductor::AddStreams() {
+	if (active_streams_.find(kStreamLabel) != active_streams_.end())
+		return;  // Already added.
+
+	rtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track(
+		peer_connection_factory_->CreateAudioTrack(
+			kAudioLabel, peer_connection_factory_->CreateAudioSource(NULL)));
+
+	rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track(
+		peer_connection_factory_->CreateVideoTrack(
+			kVideoLabel,
+			peer_connection_factory_->CreateVideoSource(OpenVideoCaptureDevice(),
+				NULL)));
+	main_wnd_->StartLocalRenderer(video_track);
+
+	rtc::scoped_refptr<webrtc::MediaStreamInterface> stream =
+		peer_connection_factory_->CreateLocalMediaStream(kStreamLabel);
+
+	stream->AddTrack(audio_track);
+	stream->AddTrack(video_track);
+	if (!peer_connection_->AddStream(stream)) {
+		LOG(LS_ERROR) << "Adding stream to PeerConnection failed";
+	}
+	typedef std::pair<std::string,
+		rtc::scoped_refptr<webrtc::MediaStreamInterface> >
+		MediaStreamPair;
+	active_streams_.insert(MediaStreamPair(stream->label(), stream));
+	main_wnd_->SwitchToStreamingUI();
+}
+
+void Conductor::AddStreamsForSubscribe() {
   if (active_streams_.find(kStreamLabel) != active_streams_.end())
     return;  // Already added.
 
   rtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track(
       peer_connection_factory_->CreateAudioTrack(
-          kAudioLabel, peer_connection_factory_->CreateAudioSource(NULL)));
+          kAudioLabel, NULL));
 
   rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track(
       peer_connection_factory_->CreateVideoTrack(
-          kVideoLabel,
-          peer_connection_factory_->CreateVideoSource(OpenVideoCaptureDevice(),
-                                                      NULL)));
-  main_wnd_->StartLocalRenderer(video_track);
+		  kVideoLabel, peer_connection_factory_->CreateVideoSource(NULL,
+			  NULL)));
+  //main_wnd_->StartLocalRenderer(video_track);
 
   rtc::scoped_refptr<webrtc::MediaStreamInterface> stream =
       peer_connection_factory_->CreateLocalMediaStream(kStreamLabel);
@@ -520,6 +588,7 @@ void Conductor::UIThreadCallback(int msg_id, void* data) {
       if (!tracks.empty()) {
         webrtc::VideoTrackInterface* track = tracks[0];
         main_wnd_->StartRemoteRenderer(track);
+		EnsureStreamingUI();
       }
       stream->Release();
       break;
@@ -561,6 +630,9 @@ void Conductor::OnSuccess(webrtc::SessionDescriptionInterface* desc) {
 
   if (FLAG_licode) {
 	  client_->SendLicodeOffer(sdp);
+	  if (!FLAG_licode_client_offer) {
+		  answer_received_ = true; //answer send
+	  }
   }
   else {
 	  Json::StyledWriter writer;
@@ -606,9 +678,13 @@ void Conductor::OnMessageFromLicode(int peer_id, const std::string& message)
 			LOG(INFO) << " Received session description :" << sdp_str;
 			peer_connection_->SetRemoteDescription(
 				DummySetSessionDescriptionObserver::Create(), session_description);
-			answer_received_ = true;
+
 			if (type == "offer") {
 					peer_connection_->CreateAnswer(this, NULL);
+			}
+			else {
+				answer_received_ = true;
+				SendBufferedCandidate();
 			}
 		}
 	}

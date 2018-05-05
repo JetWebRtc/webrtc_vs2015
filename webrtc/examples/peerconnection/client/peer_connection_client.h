@@ -97,6 +97,7 @@ protected:
   void on_sio_publish_callback(sio::message::list const& ack);
   void on_sio_subscribe_callback(sio::message::list const& ack);
   void on_sio_signaling_callback(sio::message::list const& ack);
+  void on_sio_record_callback(sio::message::list const& ack);
 
   void DoConnect_licode();
   void DoConnect();
@@ -158,6 +159,7 @@ protected:
   sio::socket::ptr sio_socket_;
   Licode_State licode_state_;
   int64_t licode_streamId_;
+  bool licode_publish_ready_;
   struct LicodeStream {
 	  int64_t id;
 	  bool video;
