@@ -425,7 +425,8 @@ void Conductor::ConnectToPeer(int peer_id) {
             peer_connection_->CreateOffer(this, opt);
 		}
 		else {
-			peer_connection_->CreateOffer(this, NULL);
+			webrtc::PeerConnectionInterface::RTCOfferAnswerOptions opt = webrtc::PeerConnectionInterface::RTCOfferAnswerOptions(0, 0, false, false, true);
+			peer_connection_->CreateOffer(this, opt);
 		}
 	}
   } else {

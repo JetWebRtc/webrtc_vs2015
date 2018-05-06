@@ -233,6 +233,8 @@ void MainWnd::OnPaint() {
   VideoRenderer* local_renderer = local_renderer_.get();
   VideoRenderer* remote_renderer = remote_renderer_.get();
   if (ui_ == STREAMING) {
+	  bool bImageDisplayed = false;
+	  bool bLocalImageDisplayed = false;
 		  if (remote_renderer) {
 			  AutoLock<VideoRenderer> remote_lock(remote_renderer);
 
@@ -269,10 +271,11 @@ void MainWnd::OnPaint() {
 
 				  StretchDIBits(dc_mem, x, y, width, height,
 					  0, 0, width, height, image, &bmi, DIB_RGB_COLORS, SRCCOPY);
+				  bImageDisplayed = true;
 
 				  if (local_renderer) {
+					  bLocalImageDisplayed = true;
 					  AutoLock<VideoRenderer> local_lock(local_renderer);
-					  bool bShowLocal = true;
 					  if ((rc.right - rc.left) > 200 && (rc.bottom - rc.top) > 200) {
 						  const BITMAPINFO& bmi = local_renderer->bmi();
 						  image = local_renderer->image();
@@ -296,7 +299,7 @@ void MainWnd::OnPaint() {
 				  ::DeleteDC(dc_mem);
 			  }
 		  }
-		  else if(local_renderer) {
+		   if(!bLocalImageDisplayed && local_renderer) {
 			  HDC dc_mem = ::CreateCompatibleDC(ps.hdc);
 			  ::SetStretchBltMode(dc_mem, HALFTONE);
 			  int width = rc.right / 2;
@@ -347,8 +350,10 @@ void MainWnd::OnPaint() {
 			  ::SelectObject(dc_mem, bmp_old);
 			  ::DeleteObject(bmp_mem);
 			  ::DeleteDC(dc_mem);
+			  bImageDisplayed = true;
 		  }
-	  else{
+
+	  if(!bImageDisplayed) {
 			// We're still waiting for the video stream to be initialized.
 			HBRUSH brush = ::CreateSolidBrush(RGB(0, 0, 0));
 			::FillRect(ps.hdc, &rc, brush);
@@ -359,7 +364,7 @@ void MainWnd::OnPaint() {
 			::SetBkMode(ps.hdc, TRANSPARENT);
 
 			std::string text(kConnecting);
-			if (!local_renderer->image()) {
+			if (local_renderer && !local_renderer->image()) {
 				text += kNoVideoStreams;
 			}
 			else {
