@@ -259,9 +259,9 @@ void PeerConnectionClient::on_sio_token_callback(sio::message::list const& ack)
 				}
 				if (bpublish) {
 					licode_state_ = sio_token_success;
-					char * publish_param = "{\"state\":\"erizo\",\"audio\":true,\"video\":true,\"data\":true,\"minVideoBW\":0,\"attributes\":{\"name\":\"test_webrtc\"}}";
+					char * publish_param = "{\"state\":\"erizo\",\"audio\":true,\"video\":true,\"data\":true,\"label\":\"stream_label\",\"minVideoBW\":0,\"attributes\":{\"name\":\"test_webrtc\"}}";
 					if (!FLAG_licode_client_offer) {
-						publish_param = "{\"state\":\"erizo\",\"audio\":true,\"video\":true,\"data\":true,\"minVideoBW\":0,\"attributes\":{\"name\":\"test_webrtc\"},\"createOffer\": {\"audio\":true ,\"video\":true, \"bundle\":false}}";
+						publish_param = "{\"state\":\"erizo\",\"audio\":true,\"video\":true,\"data\":true,\"label\":\"stream_label\",\"minVideoBW\":0,\"attributes\":{\"name\":\"test_webrtc\"},\"createOffer\": {\"audio\":true ,\"video\":true, \"bundle\":false}}";
 					}
 					Document document;
 					document.Parse(publish_param);
