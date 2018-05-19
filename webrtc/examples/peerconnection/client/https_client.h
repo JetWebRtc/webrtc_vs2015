@@ -25,7 +25,7 @@ class https_client
 {
 public:
 	https_client(boost::asio::io_service& io_service,
-		boost::asio::ssl::context& context,
+		boost::asio::ssl::context& context,bool http,
 		const std::string& server, const std::string& path, const std::string &data = "", https_client_Observer * pObserver = NULL);
 
 	std::string get_content();
@@ -53,9 +53,11 @@ private:
 
 	tcp::resolver resolver_;
 	boost::asio::ssl::stream<boost::asio::ip::tcp::socket> socket_;
+	tcp::socket socket_tcp_;
 	boost::asio::streambuf request_;
 	boost::asio::streambuf response_;
 	std::ostringstream response_content_;
 	https_client_Observer * observer_;
 	https_client_status status_;
+	bool http_;
 };

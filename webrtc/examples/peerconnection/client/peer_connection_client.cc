@@ -309,8 +309,12 @@ void PeerConnectionClient::DoConnect_licode()
 
 	boost::asio::io_service io_service;
 	std::string data = "{\"username\":\"user\",\"role\":\"presenter\",\"room\":\"basicExampleRoom\",\"type\":\"erizo\",\"mediaConfiguration\":\"default\"}";
-
-	https_client c(io_service, ctx, server_address_.ToString(), "/createToken", data);
+#ifdef SIO_TLS
+	bool usingHttp = false;
+#else
+	bool usingHttp = true;
+#endif
+	https_client c(io_service, ctx, usingHttp, server_address_.ToString(), "/createToken", data);
 	io_service.run();
 	if (c.get_status() == hcs_read_content_finish) {
 		room_token_ = c.get_content();
@@ -320,6 +324,12 @@ void PeerConnectionClient::DoConnect_licode()
 		document.Parse(decodec_room_token_.c_str());
 		if (document.HasMember("host")) {
 			std::string url = "wss://";
+			if (document.HasMember("secure")) {
+				if (document["secure"].GetBool() == false) {
+					url = "ws://";
+				}
+			}
+
 			url += document["host"].GetString();
 			sio_client_.set_open_listener(std::bind(&PeerConnectionClient::on_sio_connected, this));
 			sio_client_.set_close_listener(std::bind(&PeerConnectionClient::on_sio_close, this, std::placeholders::_1));

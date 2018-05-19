@@ -1,10 +1,12 @@
 #include "https_client.h"
 
 https_client::https_client(boost::asio::io_service& io_service,
-	boost::asio::ssl::context& context,
+	boost::asio::ssl::context& context,bool http,
 	const std::string& server, const std::string& path, const std::string &data, https_client_Observer * pObserver)
 	: resolver_(io_service),
 	socket_(io_service, context),
+	socket_tcp_(io_service),
+	http_(http),
 	observer_(pObserver),
 	status_(hcs_init)
 {
@@ -40,7 +42,12 @@ https_client::https_client(boost::asio::io_service& io_service,
 		server_ = server.substr(0, pos);
 	}
 	else {
-		port = "https";
+		if (http_) {
+			port = "80";
+		}
+		else {
+			port = "543";
+		}
 		server_ = server;
 	}
 	tcp::resolver::query query(server_, port);
@@ -62,13 +69,20 @@ void https_client::handle_resolve(const boost::system::error_code& err,
 	if (!err)
 	{
 		std::cout << "Resolve OK" << "\n";
-		socket_.set_verify_mode(boost::asio::ssl::verify_peer);
-		socket_.set_verify_callback(
-			boost::bind(&https_client::verify_certificate, this, _1, _2));
+		if (http_) {
+			boost::asio::async_connect(socket_tcp_, endpoint_iterator,
+				boost::bind(&https_client::handle_connect, this,
+					boost::asio::placeholders::error));
+		}
+		else {
+			socket_.set_verify_mode(boost::asio::ssl::verify_peer);
+			socket_.set_verify_callback(
+				boost::bind(&https_client::verify_certificate, this, _1, _2));
 
-		boost::asio::async_connect(socket_.lowest_layer(), endpoint_iterator,
-			boost::bind(&https_client::handle_connect, this,
-				boost::asio::placeholders::error));
+			boost::asio::async_connect(socket_.lowest_layer(), endpoint_iterator,
+				boost::bind(&https_client::handle_connect, this,
+					boost::asio::placeholders::error));
+		}
 	}
 	else
 	{
@@ -101,9 +115,16 @@ void https_client::handle_connect(const boost::system::error_code& err)
 	if (!err)
 	{
 		std::cout << "Connect OK " << "\n";
-		socket_.async_handshake(boost::asio::ssl::stream_base::client,
-			boost::bind(&https_client::handle_handshake, this,
-				boost::asio::placeholders::error));
+		if (http_) {
+			boost::asio::async_write(socket_tcp_, request_,
+				boost::bind(&https_client::handle_write_request, this,
+					boost::asio::placeholders::error));
+		}
+		else {			
+			socket_.async_handshake(boost::asio::ssl::stream_base::client,
+				boost::bind(&https_client::handle_handshake, this,
+					boost::asio::placeholders::error));
+		}
 	}
 	else
 	{
@@ -138,9 +159,16 @@ void https_client::handle_write_request(const boost::system::error_code& err)
 		// Read the response status line. The response_ streambuf will
 		// automatically grow to accommodate the entire line. The growth may be
 		// limited by passing a maximum size to the streambuf constructor.
-		boost::asio::async_read_until(socket_, response_, "\r\n",
-			boost::bind(&https_client::handle_read_status_line, this,
-				boost::asio::placeholders::error));
+		if (http_) {
+			boost::asio::async_read_until(socket_tcp_, response_, "\r\n",
+				boost::bind(&https_client::handle_read_status_line, this,
+					boost::asio::placeholders::error));
+		}
+		else {
+			boost::asio::async_read_until(socket_, response_, "\r\n",
+				boost::bind(&https_client::handle_read_status_line, this,
+					boost::asio::placeholders::error));
+		}
 	}
 	else
 	{
@@ -174,9 +202,16 @@ void https_client::handle_read_status_line(const boost::system::error_code& err)
 		std::cout << "Status code: " << status_code << "\n";
 
 		// Read the response headers, which are terminated by a blank line.
-		boost::asio::async_read_until(socket_, response_, "\r\n\r\n",
-			boost::bind(&https_client::handle_read_headers, this,
-				boost::asio::placeholders::error));
+		if (http_) {
+			boost::asio::async_read_until(socket_tcp_, response_, "\r\n\r\n",
+				boost::bind(&https_client::handle_read_headers, this,
+					boost::asio::placeholders::error));
+		}
+		else {
+			boost::asio::async_read_until(socket_, response_, "\r\n\r\n",
+				boost::bind(&https_client::handle_read_headers, this,
+					boost::asio::placeholders::error));
+		}
 	}
 	else
 	{
@@ -200,10 +235,18 @@ void https_client::handle_read_headers(const boost::system::error_code& err)
 			std::cout << &response_;
 
 		// Start reading remaining data until EOF.
-		boost::asio::async_read(socket_, response_,
-			boost::asio::transfer_at_least(1),
-			boost::bind(&https_client::handle_read_content, this,
-				boost::asio::placeholders::error));
+		if (http_) {
+			boost::asio::async_read(socket_tcp_, response_,
+				boost::asio::transfer_at_least(1),
+				boost::bind(&https_client::handle_read_content, this,
+					boost::asio::placeholders::error));
+		}
+		else {
+			boost::asio::async_read(socket_, response_,
+				boost::asio::transfer_at_least(1),
+				boost::bind(&https_client::handle_read_content, this,
+					boost::asio::placeholders::error));
+		}
 	}
 	else
 	{
@@ -219,10 +262,18 @@ void https_client::handle_read_content(const boost::system::error_code& err)
 		response_content_ << &response_;
 
 		// Continue reading remaining data until EOF.
-		boost::asio::async_read(socket_, response_,
-			boost::asio::transfer_at_least(1),
-			boost::bind(&https_client::handle_read_content, this,
-				boost::asio::placeholders::error));
+		if (http_) {
+			boost::asio::async_read(socket_tcp_, response_,
+				boost::asio::transfer_at_least(1),
+				boost::bind(&https_client::handle_read_content, this,
+					boost::asio::placeholders::error));
+		}
+		else {
+			boost::asio::async_read(socket_, response_,
+				boost::asio::transfer_at_least(1),
+				boost::bind(&https_client::handle_read_content, this,
+					boost::asio::placeholders::error));
+		}
 	}
 	else if (err != boost::asio::error::eof)
 	{
@@ -259,7 +310,7 @@ int main(int argc, char* argv[])
 		}
 
 
-        https_client c(io_service, ctx, argv[1], argv[2], data);
+        https_client c(io_service, ctx, false, argv[1], argv[2], data);
         io_service.run();
     }
     catch (std::exception& e)
